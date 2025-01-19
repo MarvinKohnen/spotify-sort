@@ -40,11 +40,21 @@ def sort_tracks_by_release_date(tracks):
 
 def update_playlist(playlist_id, tracks):
     track_ids = [track['id'] for track in tracks]
-    sp.playlist_replace_items(playlist_id, track_ids)
 
+    # Break the track_ids list into chunks of 100
+    chunk_size = 100
+    track_chunks = [track_ids[i:i + chunk_size] for i in range(0, len(track_ids), chunk_size)]
+
+    # Clear the existing playlist
+    sp.playlist_replace_items(playlist_id, [])
+
+    # Add the tracks in chunks
+    for chunk in track_chunks:
+        sp.playlist_add_items(playlist_id, chunk)
 def main():
     tracks = get_playlist_tracks(playlist_id)
-    print(len(tracks))
+    print(f"Number of tracks in the playlist: {len(tracks)}")
+
     sorted_tracks = sort_tracks_by_release_date(tracks)
     print("Tracks sorted by date")
 
